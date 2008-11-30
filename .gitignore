@@ -1,0 +1,4 @@
+*.pyc
+icbing.egg-info
+build
+dist
