@@ -2,6 +2,10 @@
 
 from sqlalchemy import orm
 
+from icbing.model.header import Header
+from icbing.model.tag import Tag
+from icbing.model.message import Message
+
 from icbing.model import meta
 
 def init_model(engine):
