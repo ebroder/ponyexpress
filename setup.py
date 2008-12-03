@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="icbing",
@@ -9,6 +9,6 @@ setup(
     author="Evan Broder",
     author_email="broder@mit.edu",
     license="MIT",
-    py_modules=['icbing'],
+    packages=find_packages(),
     #install_requires=['Twisted_Mail']
 )
