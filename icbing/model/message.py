@@ -4,7 +4,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 
 from icbing.model.base import Base
 from icbing.model.header import Header
-from icbing.model.tag import Tag, MessageTag
+from icbing.model.tag import Tag
 
 import datetime
 
@@ -33,3 +33,9 @@ class Message(Base):
     tags = relation(Tag,
                     backref='tags',
                     secondary='MessageTag')
+
+class MessageTag(Base):
+    __tablename__ = 'messages_tags'
+    
+    message_id = sa.Column(sa.ForeignKey('messages.id'), primary_key=True)
+    tag_id = sa.Column(sa.ForeignKey('tags.id'), primary_key=True)
