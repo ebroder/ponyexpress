@@ -6,7 +6,7 @@ from icbing.model.base import Base
 from icbing.model.header import Header
 from icbing.model.tag import Tag
 
-import datetime
+from datetime import datetime
 
 class Message(Base):
     __tablename__ = 'messages'
