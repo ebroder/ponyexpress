@@ -15,12 +15,12 @@ class Message(Base):
     orig_body = sa.Column(sa.types.Binary)
     search_body = sa.Column(sa.types.Text, index=True)
     
-    seen = sa.Column(sa.types.Boolean, default=False)
-    answered = sa.Column(sa.types.Boolean, default=False)
-    flagged = sa.Column(sa.types.Boolean, default=False)
-    deleted = sa.Column(sa.types.Boolean, default=False)
-    draft = sa.Column(sa.types.Boolean, default=False)
-    recent = sa.Column(sa.types.Boolean, default=True)
+    seen = sa.Column(sa.types.Boolean, nullable=False, default=False)
+    answered = sa.Column(sa.types.Boolean, nullable=False, default=False)
+    flagged = sa.Column(sa.types.Boolean, nullable=False, default=False)
+    deleted = sa.Column(sa.types.Boolean, nullable=False, default=False)
+    draft = sa.Column(sa.types.Boolean, nullable=False, default=False)
+    recent = sa.Column(sa.types.Boolean, nullable=False, default=True)
     
     created_at = sa.Column(sa.types.DateTime, default=datetime.utcnow)
     updated_at = sa.Column(sa.types.DateTime, onupdate=datetime.utcnow)
