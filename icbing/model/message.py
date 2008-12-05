@@ -28,6 +28,7 @@ class Message(Base):
     headers = relation(Header,
                        backref='message',
                        collection_class=ordering_list('position'),
+                       cascade='all, delete-orphan',
                        order_by=[Header.position])
     tags = relation(Tag,
                     backref='tags',
