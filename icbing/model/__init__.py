@@ -5,7 +5,7 @@ from sqlalchemy import orm
 from icbing.model.header import Header
 from icbing.model.tag import Tag
 from icbing.model.message import Message
-from icbing.model.folder import Folder
+from icbing.model.mailbox import Mailbox
 
 from icbing.model import meta
 
