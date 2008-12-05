@@ -33,6 +33,10 @@ class Message(Base):
                     backref='tags',
                     secondary='MessageTag')
 
+# This class has to be defined after both Message and Tag are defined
+# - sa.orm.relation() is clever enough to take strings for classes
+# that aren't defined, but sa.ForeignKey expects the foreign key's
+# table object to already be defined in the mapper
 class MessageTag(Base):
     __tablename__ = 'messages_tags'
     
