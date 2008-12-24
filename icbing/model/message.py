@@ -14,6 +14,7 @@ class Message(Base):
     
     id = sa.Column(sa.types.Integer, primary_key=True)
     orig_body = sa.Column(sa.types.Binary)
+    length = sa.Column(sa.types.Integer, nullable=False)
     search_body = sa.Column(sa.types.Text, index=True)
     
     seen = sa.Column(sa.types.Boolean, nullable=False, default=False)
