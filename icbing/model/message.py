@@ -5,6 +5,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from icbing.model.base import Base
 from icbing.model.header import Header
 from icbing.model.tag import Tag
+from icbing.model.message_tag import messages_tags
 
 from datetime import datetime
 
@@ -31,15 +32,5 @@ class Message(Base):
                        cascade='all, delete-orphan',
                        order_by=[Header.position])
     tags = relation(Tag,
-                    backref='tags',
-                    secondary='MessageTag')
-
-# This class has to be defined after both Message and Tag are defined
-# - sa.orm.relation() is clever enough to take strings for classes
-# that aren't defined, but sa.ForeignKey expects the foreign key's
-# table object to already be defined in the mapper
-class MessageTag(Base):
-    __tablename__ = 'messages_tags'
-    
-    message_id = sa.Column(sa.ForeignKey('messages.id'), primary_key=True)
-    tag_id = sa.Column(sa.ForeignKey('tags.id'), primary_key=True)
+                    backref='messages',
+                    secondary=messages_tags)
