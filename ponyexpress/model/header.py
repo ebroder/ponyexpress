@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relation
-from icbing.model.base import Base
+from ponyexpress.model.base import Base
 
 class Header(Base):
     __tablename__ = 'headers'

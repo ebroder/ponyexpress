@@ -3,9 +3,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="icbing",
+    name="PonyExpress",
     version="0.0.0",
-    description="I Can't Believe It's Not Gmail - A tagging IMAP server",
+    description="The PonyExpress - A tagging IMAP server",
     author="Evan Broder",
     author_email="broder@mit.edu",
     license="MIT",

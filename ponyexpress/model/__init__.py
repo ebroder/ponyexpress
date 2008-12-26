@@ -1,13 +1,13 @@
-"""The icbing database model"""
+"""The PonyExpress database model"""
 
 from sqlalchemy import orm
 
-from icbing.model.header import Header
-from icbing.model.tag import Tag
-from icbing.model.message import Message
-from icbing.model.mailbox import Mailbox
+from ponyexpress.model.header import Header
+from ponyexpress.model.tag import Tag
+from ponyexpress.model.message import Message
+from ponyexpress.model.mailbox import Mailbox
 
-from icbing.model import meta
+from ponyexpress.model import meta
 
 def init_model(engine):
     """Call me before using any of the tables or classes in the model"""

@@ -2,10 +2,10 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relation
 from sqlalchemy.ext.orderinglist import ordering_list
 
-from icbing.model.base import Base
-from icbing.model.header import Header
-from icbing.model.tag import Tag
-from icbing.model.message_tag import messages_tags
+from ponyexpress.model.base import Base
+from ponyexpress.model.header import Header
+from ponyexpress.model.tag import Tag
+from ponyexpress.model.message_tag import messages_tags
 
 from datetime import datetime
 

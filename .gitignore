@@ -1,4 +1,4 @@
 *.pyc
-icbing.egg-info
+PonyExpress.egg-info
 build
 dist

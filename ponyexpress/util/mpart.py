@@ -8,7 +8,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from icbing.util.headers import Headers
+from ponyexpress.util.headers import Headers
 
 class MPart(object):
     implements(imap4.IMessagePart)

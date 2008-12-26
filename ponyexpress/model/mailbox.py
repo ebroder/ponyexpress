@@ -1,8 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relation
 
-from icbing.model.base import Base
-from icbing.model.tag import Tag
+from ponyexpress.model.base import Base
+from ponyexpress.model.tag import Tag
 
 from zope.interface import implements
 from twisted.mail import imap4

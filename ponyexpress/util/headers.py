@@ -1,5 +1,5 @@
 """
-icbing utility modules: a class for storing headers
+ponyexpress utility modules: a class for storing headers
 """
 
 class Headers(object):

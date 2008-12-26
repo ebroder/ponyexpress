@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relation
-from icbing.model.base import Base
+from ponyexpress.model.base import Base
 
 class Tag(Base):
     __tablename__ = 'tags'

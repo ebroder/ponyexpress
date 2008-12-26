@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from icbing.model.base import Base
+from ponyexpress.model.base import Base
 
 messages_tags = sa.Table('messages_tags', Base.metadata,
                          sa.Column('message_id', sa.ForeignKey('messages.id'), primary_key=True),
