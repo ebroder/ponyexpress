@@ -91,7 +91,16 @@ class Mailbox(Base):
         return 1
 
     def getUIDNext(self):
-        raise NotImplementedError
+        # It's a bit dumb, but there's no database-independent way to
+        # get the next value to be used for a primary key.
+        #
+        # UIDNEXT isn't guaranteed to be accurate anyway, just
+        # guaranteed to change iff new messages get inserted. This
+        # method should have that property.
+        try:
+            return meta.Session.query(sa.func.max(Message.id)).one()[0] + 1
+        except TypeError:
+            return 1
 
     def getUID(self, message):
         # self.messages is already a list of UIDs in sequence
