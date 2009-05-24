@@ -21,7 +21,9 @@ class Mailbox(Base):
     # The twisted.mail.imap4.IMailbox interface:
 
     def getUIDValidity(self):
-        raise NotImplementedError
+        # Since the UID is the primary key of the database, that will
+        # never change, so the UIDVALIDITY is constant
+        return 1
 
     def getUIDNext(self):
         raise NotImplementedError
