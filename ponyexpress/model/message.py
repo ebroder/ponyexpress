@@ -13,9 +13,8 @@ class Message(Base):
     __tablename__ = 'messages'
     
     id = sa.Column(sa.types.Integer, primary_key=True)
-    orig_body = sa.Column(sa.types.Binary)
+    body = sa.Column(sa.types.Text, index=True)
     length = sa.Column(sa.types.Integer, nullable=False)
-    search_body = sa.Column(sa.types.Text, index=True)
     
     seen = sa.Column(sa.types.Boolean, nullable=False, default=False)
     answered = sa.Column(sa.types.Boolean, nullable=False, default=False)
