@@ -46,7 +46,8 @@ class Mailbox(Base):
         Load the list of Message ids contained in this Mailbox based
         on the query value.
         """
-        self.messages = self.parseQuery(self.query)
+        self.messages = list(self.parseQuery(self.query))
+        self.messages.sort()
 
     @staticmethod
     def parseQuery(query):
@@ -93,10 +94,14 @@ class Mailbox(Base):
         raise NotImplementedError
 
     def getUID(self, message):
-        raise NotImplementedError
+        # self.messages is already a list of UIDs in sequence
+        # order. This is easy!
+        return self.messages[message]
 
     def getMessageCount(self):
-        raise NotImplementedError
+        # Also easy, since we already have a list of messages in this
+        # mailbox
+        return len(self.messages)
 
     def getRecentCount(self):
         raise NotImplementedError
@@ -105,7 +110,9 @@ class Mailbox(Base):
         raise NotImplementedError
 
     def isWriteable(self):
-        raise NotImplementedError
+        # A mailbox is only writeable if moving a message into it
+        # causes that message to be tagged with something
+        return self.set_tag is not None
 
     def destroy(self):
         raise NotImplementedError
