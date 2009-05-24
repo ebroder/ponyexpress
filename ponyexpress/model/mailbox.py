@@ -113,10 +113,15 @@ class Mailbox(Base):
         return len(self.messages)
 
     def getRecentCount(self):
-        raise NotImplementedError
+        # Slightly less easy
+        return meta.Session.query(sa.func.count(Message.id)).\
+            filter(Message.id.in_(self.messages)).\
+            filter(Message.recent==True).one()[0]
 
     def getUnseenCount(self):
-        raise NotImplementedError
+        return meta.Session.query(sa.func.count(Message.id)).\
+            filter(Message.id.in_(self.messages)).\
+            filter(Message.seen==False).one()[0]
 
     def isWriteable(self):
         # A mailbox is only writeable if moving a message into it
