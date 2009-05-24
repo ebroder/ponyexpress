@@ -11,7 +11,7 @@ from datetime import datetime
 
 class Message(Base):
     __tablename__ = 'messages'
-    
+
     # Used as the UID of the message
     id = sa.Column(sa.types.Integer, primary_key=True)
     # Just the message body; does not include headers
@@ -19,18 +19,18 @@ class Message(Base):
     # This is the total size of the message, including headers, in
     # bytes when rendered in RFC 2822 form
     length = sa.Column(sa.types.Integer, nullable=False)
-    
+
     seen = sa.Column(sa.types.Boolean, nullable=False, default=False)
     answered = sa.Column(sa.types.Boolean, nullable=False, default=False)
     flagged = sa.Column(sa.types.Boolean, nullable=False, default=False)
     deleted = sa.Column(sa.types.Boolean, nullable=False, default=False)
     draft = sa.Column(sa.types.Boolean, nullable=False, default=False)
     recent = sa.Column(sa.types.Boolean, nullable=False, default=True)
-    
+
     # Used for the internal date field
     created_at = sa.Column(sa.types.DateTime, default=datetime.utcnow)
     updated_at = sa.Column(sa.types.DateTime, onupdate=datetime.utcnow)
-    
+
     headers = relation(Header,
                        backref='message',
                        collection_class=ordering_list('position'),
