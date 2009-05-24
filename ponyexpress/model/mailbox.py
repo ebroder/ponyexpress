@@ -3,6 +3,8 @@ from sqlalchemy.orm import relation
 
 from ponyexpress.model.base import Base
 from ponyexpress.model.tag import Tag
+from ponyexpress.model.message import Message
+from ponyexpress.model import meta
 
 from zope.interface import implements
 from twisted.mail import imap4
@@ -15,8 +17,70 @@ class Mailbox(Base):
     path = sa.Column(sa.types.Text, nullable=False)
     set_tag_id = sa.Column(sa.ForeignKey('tags.id'))
     query = sa.Column(sa.types.PickleType, nullable=False)
+    """
+    The query structure determines which messages are displayed as
+    being in this mailbox.
+
+    If query is a string, then it matches all messages tagged with
+    that string.
+
+    If it is a number, then it matches all messages tagged with the
+    tag whose id is that number.
+
+    If it is a tuple, then the tuple must be of odd length and its
+    members must alternate between sub-query specifications and
+    operands. Operands are strings and are one of "&" (intersection),
+    "|" (union), or "-" (set difference). All operands are processed
+    from left to right.
+
+    An example of a query might be::
+
+        ("sipb", "&", "debathena", "-", ("ubuntu", "|", "debian"))
+    """
 
     set_tag = relation(Tag)
+
+    @sa.orm.reconstructor
+    def loadContents(self):
+        """
+        Load the list of Message ids contained in this Mailbox based
+        on the query value.
+        """
+        self.messages = self.parseQuery(self.query)
+
+    @staticmethod
+    def parseQuery(query):
+        """
+        Given a query list or string, return those messages that match
+        that query.
+        """
+        if isinstance(query, basestring):
+            return set(meta.Session.query(Message.id).join('tags').\
+                           filter_by(name=query))
+        elif isinstance(query, int):
+            return set(meta.Session.query(Message.id).join('tags').\
+                           filter_by(id=query))
+        else:
+            # I'm going to be manipulating the query list, so I need
+            # to duplicate it
+            query = list(query)
+            # We need somewhere to start from
+            messages = self.parseQuery(query.pop(0))
+            while query:
+                # Evaluate the next query spec
+                next = self.parseQuery(query[1])
+                # And combine appropriately
+                op = query[0]
+                if op == '&':
+                    messages &= next
+                elif op == '|':
+                    messages |= next
+                elif op == '-':
+                    messages -= next
+
+                # Remove the operand and query spec we just processed
+                del query[0:2]
+            return messages
 
     # The twisted.mail.imap4.IMailbox interface:
 
