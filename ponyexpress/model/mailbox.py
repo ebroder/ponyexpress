@@ -49,8 +49,8 @@ class Mailbox(Base):
         self.messages = self.parseQuery(self.query).all()
         self.messages.sort()
 
-    @staticmethod
-    def parseQuery(query):
+    @classmethod
+    def parseQuery(cls, query):
         """
         Given a query list or string, return those messages that match
         that query.
@@ -66,10 +66,10 @@ class Mailbox(Base):
             # to duplicate it
             query = list(query)
             # We need somewhere to start from
-            messages = self.parseQuery(query.pop(0))
+            messages = cls.parseQuery(query.pop(0))
             while query:
                 # Evaluate the next query spec
-                next = self.parseQuery(query[1])
+                next = cls.parseQuery(query[1])
                 # And combine appropriately
                 op = query[0]
                 if op == '&':
