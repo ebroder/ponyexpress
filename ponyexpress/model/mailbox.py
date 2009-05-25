@@ -122,14 +122,14 @@ class Mailbox(Base):
 
     def getRecentCount(self):
         # Slightly less easy
-        return meta.Session.query(sa.func.count(Message.id)).\
+        return meta.Session.query(Message).\
             filter(Message.id.in_(self.messages)).\
-            filter(Message.recent==True).one()[0]
+            filter(Message.recent==True).count()
 
     def getUnseenCount(self):
-        return meta.Session.query(sa.func.count(Message.id)).\
+        return meta.Session.query(Message).\
             filter(Message.id.in_(self.messages)).\
-            filter(Message.seen==False).one()[0]
+            filter(Message.seen==False).count()
 
     def isWriteable(self):
         # A mailbox is only writeable if moving a message into it
