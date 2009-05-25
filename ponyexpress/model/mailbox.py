@@ -11,7 +11,7 @@ from twisted.mail import imap4
 
 class Mailbox(Base):
     __tablename__ = 'mailboxes'
-    implements(imap4.IMailbox, imap4.ISearchableMailbox)
+    implements(imap4.IMailbox, imap4.ISearchableMailbox, imap4.IMessageCopier)
 
     id = sa.Column(sa.types.Integer, primary_key=True)
     path = sa.Column(sa.types.Text, nullable=False)
@@ -160,3 +160,21 @@ class Mailbox(Base):
 
     def search(self, query, uid):
         raise NotImplementedError
+
+    # The twisted.mail.imap4.IMessageCopier interface
+
+    def copy(self, msg):
+        # Since msg must have come from IMailbox.fetch, it must be a
+        # ponyexpress.model.Message object, so we can just append to
+        # its tag list
+        if not self.isWriteable():
+            raise imap4.ReadOnlyMailbox
+
+        try:
+            msg.tags.append(self.set_tag)
+            meta.Session.add(msg)
+            meta.Session.commit()
+            return msg.id
+        except:
+            meta.Session.rollback()
+            raise
