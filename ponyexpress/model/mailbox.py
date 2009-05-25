@@ -46,7 +46,7 @@ class Mailbox(Base):
         Load the list of Message ids contained in this Mailbox based
         on the query value.
         """
-        self.messages = list(self.parseQuery(self.query))
+        self.messages = self.parseQuery(self.query).all()
         self.messages.sort()
 
     @staticmethod
@@ -56,11 +56,11 @@ class Mailbox(Base):
         that query.
         """
         if isinstance(query, basestring):
-            return set(meta.Session.query(Message.id).join('tags').\
-                           filter_by(name=query))
+            return meta.Session.query(Message.id).join('tags').\
+                filter_by(name=query)
         elif isinstance(query, int):
-            return set(meta.Session.query(Message.id).join('tags').\
-                           filter_by(id=query))
+            return meta.Session.query(Message.id).join('tags').\
+                filter_by(id=query)
         else:
             # I'm going to be manipulating the query list, so I need
             # to duplicate it
@@ -73,11 +73,11 @@ class Mailbox(Base):
                 # And combine appropriately
                 op = query[0]
                 if op == '&':
-                    messages &= next
+                    messages = messages.intersect(next)
                 elif op == '|':
-                    messages |= next
+                    messages = messages.union(next)
                 elif op == '-':
-                    messages -= next
+                    messages = messages.except_(next)
 
                 # Remove the operand and query spec we just processed
                 del query[0:2]
