@@ -89,7 +89,7 @@ class Mailbox(Base):
         raise NotImplementedError
 
     def getHierarchialDelimiter():
-        raise NotImplementedError
+        return '.'
 
     # The twisted.mail.imap4.IMailbox interface:
 
