@@ -83,6 +83,14 @@ class Mailbox(Base):
                 del query[0:2]
             return messages
 
+    # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
+
+    def getFlags(self):
+        raise NotImplementedError
+
+    def getHierarchialDelimiter():
+        raise NotImplementedError
+
     # The twisted.mail.imap4.IMailbox interface:
 
     def getUIDValidity(self):
