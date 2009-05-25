@@ -10,5 +10,5 @@ setup(
     author_email="broder@mit.edu",
     license="MIT",
     packages=find_packages(),
-    #install_requires=['Twisted_Mail']
+    #install_requires=['Twisted_Mail', 'SQLAlchemy>=0.5.0']
 )
