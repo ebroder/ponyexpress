@@ -147,7 +147,11 @@ class Mailbox(Base):
         raise NotImplementedError
 
     def fetch(self, messages, uid):
-        raise NotImplementedError
+        for m in messages:
+            if uid:
+                yield meta.Session.query(Message).get(m)
+            else:
+                yield meta.Session.query(Message).get(self.messages[m])
 
     def store(self, messages, flags, mode, uid):
         raise NotImplementedError
