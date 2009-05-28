@@ -15,7 +15,6 @@ class Mailbox(Base):
 
     id = sa.Column(sa.types.Integer, primary_key=True)
     path = sa.Column(sa.types.Text, nullable=False)
-    set_tag_id = sa.Column(sa.ForeignKey('tags.id'))
     query = sa.Column(sa.types.PickleType, nullable=False)
     """
     The query structure determines which messages are displayed as
@@ -36,9 +35,20 @@ class Mailbox(Base):
     An example of a query might be::
 
         ("sipb", "&", "debathena", "-", ("ubuntu", "|", "debian"))
+
+    Whether a folder is writeable is determined by its query string -
+    if the string only references a single tag, then moving a message
+    into that folder adds that tag. If the query is more complex, then
+    the folder is read-only.
     """
 
-    set_tag = relation(Tag)
+    def setTag(self):
+        if not isinstance(self.query, (basestring, int)):
+            raise imap4.ReadOnlyMailbox
+        if isinstance(self.query, basestring):
+            return meta.Session.query(Tag).filter_by(name=self.query).one()
+        else:
+            return meta.Session.query(Tag).get(self.query)
 
     @sa.orm.reconstructor
     def loadContents(self):
@@ -140,7 +150,7 @@ class Mailbox(Base):
     def isWriteable(self):
         # A mailbox is only writeable if moving a message into it
         # causes that message to be tagged with something
-        return self.set_tag is not None
+        return isinstance(self.query, (basestring, int))
 
     def destroy(self):
         raise NotImplementedError
@@ -181,11 +191,8 @@ class Mailbox(Base):
         # Since msg must have come from IMailbox.fetch, it must be a
         # ponyexpress.model.Message object, so we can just append to
         # its tag list
-        if not self.isWriteable():
-            raise imap4.ReadOnlyMailbox
-
         try:
-            msg.tags.append(self.set_tag)
+            msg.tags.append(self.setTag())
             meta.Session.add(msg)
             meta.Session.commit()
             return msg.id
