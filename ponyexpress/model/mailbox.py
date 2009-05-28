@@ -86,7 +86,13 @@ class Mailbox(Base):
     # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
 
     def getFlags(self):
-        raise NotImplementedError
+        # Flags required by the IMAP spec
+        flags = ['\Answered', '\Flagged', '\Deleted', '\Seen', '\Draft']
+        # Keywords already defined as tags
+        flags.extend(row[0] for row in meta.Session.query(Tag.name))
+        # Indicate that clients can create new keywords
+        flags.append('\*')
+        return flags
 
     def getHierarchialDelimiter():
         return '.'
