@@ -94,6 +94,12 @@ class Mailbox(Base):
                 del query[0:2]
             return messages
 
+    def __terminateSet(self, messages, uid):
+        if uid:
+            messages.last = self.messages[-1]
+        else:
+            messages.last = len(self.messages)
+
     # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
 
     def getFlags(self):
@@ -181,6 +187,7 @@ class Mailbox(Base):
         raise NotImplementedError
 
     def fetch(self, messages, uid):
+        self.__terminateSet(messages, uid)
         for m in messages:
             if uid:
                 yield meta.Session.query(Message).get(m)
