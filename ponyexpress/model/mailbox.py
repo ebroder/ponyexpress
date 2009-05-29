@@ -3,6 +3,7 @@ from sqlalchemy.orm import relation
 
 from ponyexpress.model.base import Base
 from ponyexpress.model.tag import Tag
+from ponyexpress.model.message_tag import MessageTag
 from ponyexpress.model.message import Message
 from ponyexpress.model import meta
 
@@ -153,7 +154,16 @@ class Mailbox(Base):
         return isinstance(self.query, (basestring, int))
 
     def destroy(self):
-        raise NotImplementedError
+        try:
+            setTag = self.setTag()
+            if setTag is not None:
+                meta.Session.query(MessageTag).\
+                    filter(MessageTag.tag_id==setTag).\
+                    delete()
+                meta.Session.commit()
+        except:
+            meta.Session.rollback()
+            raise
 
     def requestStatus(self, names):
         return imap4.statusRequestHelper(self, names)
