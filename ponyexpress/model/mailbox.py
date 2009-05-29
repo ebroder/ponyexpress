@@ -136,6 +136,10 @@ class Mailbox(Base):
     def getUID(self, message):
         # self.messages is already a list of UIDs in sequence
         # order. This is easy!
+        #
+        # Note that if the sequence number is higher than the number
+        # of messages, it'll trigger a KeyError. That's fine, because
+        # that lookup is illegal anyway
         return self.messages[message - 1]
 
     def getMessageCount(self):
@@ -197,11 +201,11 @@ class Mailbox(Base):
                     yield msg
             else:
                 # The message sequence counter could potentially
-                # overflow the number of messages in the mailbox
-                try:
-                    yield meta.Session.query(Message).get(self.messages[m - 1])
-                except KeyError:
-                    pass
+                # overflow the number of messages in the mailbox, but
+                # it's illegal for the client to request a sequence
+                # number that doesn't exist, so we want to pass up the
+                # KeyError
+                yield meta.Session.query(Message).get(self.messages[m - 1])
 
     def store(self, messages, flags, mode, uid):
         raise NotImplementedError
