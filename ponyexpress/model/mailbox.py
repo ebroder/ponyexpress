@@ -15,7 +15,7 @@ class Mailbox(Base):
     implements(imap4.IMailbox, imap4.ISearchableMailbox, imap4.IMessageCopier)
 
     id = sa.Column(sa.types.Integer, primary_key=True)
-    path = sa.Column(sa.types.Text, nullable=False)
+    path = sa.Column(sa.types.Text, nullable=False, unique=True)
     query = sa.Column(sa.types.PickleType, nullable=False)
     """
     The query structure determines which messages are displayed as
