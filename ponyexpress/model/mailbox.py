@@ -190,9 +190,18 @@ class Mailbox(Base):
         self.__terminateSet(messages, uid)
         for m in messages:
             if uid:
-                yield meta.Session.query(Message).get(m)
+                # If we're looping over a range of UIDs, we should
+                # make sure each UID exists so we don't yield None
+                msg = meta.Session.query(Message).get(m)
+                if msg is not None:
+                    yield msg
             else:
-                yield meta.Session.query(Message).get(self.messages[m - 1])
+                # The message sequence counter could potentially
+                # overflow the number of messages in the mailbox
+                try:
+                    yield meta.Session.query(Message).get(self.messages[m - 1])
+                except KeyError:
+                    pass
 
     def store(self, messages, flags, mode, uid):
         raise NotImplementedError
