@@ -44,7 +44,7 @@ class Mailbox(Base):
 
     def setTag(self):
         if not isinstance(self.query, (basestring, int)):
-            raise imap4.ReadOnlyMailbox
+            return
         if isinstance(self.query, basestring):
             return meta.Session.query(Tag).filter_by(name=self.query).one()
         else:
@@ -192,7 +192,10 @@ class Mailbox(Base):
         # ponyexpress.model.Message object, so we can just append to
         # its tag list
         try:
-            msg.tags.append(self.setTag())
+            setTag = self.setTag()
+            if setTag is None:
+                raise imap4.ReadOnlyMailbox
+            msg.tags.append(setTag)
             meta.Session.add(msg)
             meta.Session.commit()
             return msg.id
