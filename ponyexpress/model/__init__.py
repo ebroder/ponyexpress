@@ -2,8 +2,10 @@
 
 from sqlalchemy import orm
 
+from ponyexpress.model.base import Base
 from ponyexpress.model.header import Header
 from ponyexpress.model.tag import Tag
+from ponyexpress.model.message_tag import MessageTag
 from ponyexpress.model.message import Message
 from ponyexpress.model.mailbox import Mailbox
 

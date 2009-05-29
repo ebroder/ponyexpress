@@ -1,11 +1,12 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relation
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from ponyexpress.model.base import Base
 from ponyexpress.model.header import Header
 from ponyexpress.model.tag import Tag
-from ponyexpress.model.message_tag import messages_tags
+from ponyexpress.model.message_tag import MessageTag
 
 from datetime import datetime
 
@@ -36,6 +37,7 @@ class Message(Base):
                        collection_class=ordering_list('position'),
                        cascade='all, delete-orphan',
                        order_by=[Header.position])
-    tags = relation(Tag,
-                    backref='messages',
-                    secondary=messages_tags)
+    message_tags = relation(MessageTag,
+                            backref='message')
+    tags = association_proxy('message_tags', 'tag',
+                             creator=(lambda x: MessageTag(tag=x)))
