@@ -130,7 +130,7 @@ class Mailbox(Base):
     def getUID(self, message):
         # self.messages is already a list of UIDs in sequence
         # order. This is easy!
-        return self.messages[message]
+        return self.messages[message - 1]
 
     def getMessageCount(self):
         # Also easy, since we already have a list of messages in this
@@ -185,7 +185,7 @@ class Mailbox(Base):
             if uid:
                 yield meta.Session.query(Message).get(m)
             else:
-                yield meta.Session.query(Message).get(self.messages[m])
+                yield meta.Session.query(Message).get(self.messages[m - 1])
 
     def store(self, messages, flags, mode, uid):
         raise NotImplementedError
