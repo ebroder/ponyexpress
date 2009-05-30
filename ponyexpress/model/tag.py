@@ -62,3 +62,17 @@ class Tag(Base):
                         filter(MessageTag.tag_id==self.id).\
                         offset(m - 1).\
                         scalar()
+
+    # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
+
+    def getFlags(self):
+        # Flags required by the IMAP spec, but not tracked as tags
+        flags = ['\Deleted']
+        # Keywords already defined as tags
+        flags.extend(row[0] for row in meta.Session.query(Tag.name))
+        # And indicate that clients can create new keywords
+        flags.append('\*')
+        return flags
+
+    def getHierarchialDelimiter(self):
+        return '.'
