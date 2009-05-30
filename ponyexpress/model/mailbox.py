@@ -45,7 +45,7 @@ class Mailbox(Base):
     """
 
     def setTag(self):
-        if not self.isWriteable()
+        if not self.isWriteable():
             return
         if isinstance(self.query, basestring):
             return meta.Session.query(Tag).filter_by(name=self.query).one()
