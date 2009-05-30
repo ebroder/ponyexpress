@@ -202,6 +202,10 @@ class Mailbox(Base):
                 yield msg
 
     def store(self, messages, flags, mode, uid):
+        # Make sure this folder isn't read-only
+        if not self.isWriteable():
+            raise imap4.ReadOnlyMailbox
+
         messages = self.__parseSet(messages, uid)
 
         # \Deleted is the special case flag - it's not treated as a
