@@ -222,9 +222,12 @@ class Mailbox(Base):
                     filter(MessageTag.message_id.in_(messages)).\
                     filter(MessageTag.tag_id.in_(tags)).\
                     delete()
+                # If we're unsetting flags and \Deleted is one of the
+                # ones to unset
                 if deleted:
-                    meta.Session.query(Message).\
-                        filter(Message.id.in_(messages)).\
+                    meta.Session.query(MessageTag).\
+                        filter(MessageTag.message_id.in_(messages)).\
+                        filter(MessageTag.tag_id==self.setTag()).\
                         update({'deleted': False})
             else:
                 if mode == 0:
@@ -233,9 +236,12 @@ class Mailbox(Base):
                         filter(MessageTag.message_in.in_(messages)).\
                         filter(sa.sql.not_(MessageTag.tag_id.in_(tags))).\
                         delete()
+                    # If \Deleted isn't one of the flags that should
+                    # stay set, unset it
                     if not deleted:
-                        meta.Session.query(Messages).\
-                            filter(Message.id.in_(messages)).\
+                        meta.Session.query(MessageTag).\
+                            filter(MessageTag.message_id.in_(messages)).\
+                            filter(MessageTag.tag_id==self.setTag()).\
                             update({'deleted': False})
 
                 # We know that we're not removing flags, so regardless
@@ -248,9 +254,11 @@ class Mailbox(Base):
                         meta.Session.add(MessageTag(message_id=message,
                                                     tag_id=tag))
 
+                # If we are setting tags and we should set \Deleted
                 if deleted:
-                    meta.Session.query(Messages).\
-                        filter(Message.id.in_(messages)).\
+                    meta.Session.query(MessageTag).\
+                        filter(MessageTag.message_id.in_(messages)).\
+                        filter(MessageTag.tag_id==self.setTag()).\
                         update({'deleted': True})
 
             meta.Session.commit()
