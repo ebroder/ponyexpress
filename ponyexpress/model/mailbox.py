@@ -202,7 +202,61 @@ class Mailbox(Base):
                 yield msg
 
     def store(self, messages, flags, mode, uid):
-        raise NotImplementedError
+        messages = self.__parseSet(messages, uid)
+
+        # \Deleted is the special case flag - it's not treated as a
+        # normal tag, but instead it's stored on the messages_tags
+        # secondary table
+        try:
+            flags.remove('\Deleted')
+            deleted = True
+        except ValueError:
+            deleted = False
+
+        try:
+            # Look up tag IDs from flags
+            tags = meta.Session.query(Tag.id).filter(Tag.name.in_(flags)).all()
+
+            if mode == -1:
+                meta.Session.query(MessageTag).\
+                    filter(MessageTag.message_id.in_(messages)).\
+                    filter(MessageTag.tag_id.in_(tags)).\
+                    delete()
+                if deleted:
+                    meta.Session.query(Message).\
+                        filter(Message.id.in_(messages)).\
+                        update({'deleted': False})
+            else:
+                if mode == 0:
+                    # Clear all flags that we're not about to set
+                    meta.Session.query(MessageTag).\
+                        filter(MessageTag.message_in.in_(messages)).\
+                        filter(sa.sql.not_(MessageTag.tag_id.in_(tags))).\
+                        delete()
+                    if not deleted:
+                        meta.Session.query(Messages).\
+                            filter(Message.id.in_(messages)).\
+                            update({'deleted': False})
+
+                # We know that we're not removing flags, so regardless
+                # of whether we're in mode 0 or 1, we need to set all
+                # of the flags that were passed in
+                #
+                # Now set all of the tags we've been asked to set
+                for tag in tags:
+                    for message in messages:
+                        meta.Session.add(MessageTag(message_id=message,
+                                                    tag_id=tag))
+
+                if deleted:
+                    meta.Session.query(Messages).\
+                        filter(Message.id.in_(messages)).\
+                        update({'deleted': True})
+
+            meta.Session.commit()
+        except:
+            meta.Session.rollback()
+            raise
 
     # The twisted.mail.imap4.ISearchableMailbox interface
 
