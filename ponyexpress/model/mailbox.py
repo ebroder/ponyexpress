@@ -22,7 +22,8 @@ class Mailbox(Base):
     being in this mailbox.
 
     If query is a string, then it matches all messages tagged with
-    that string.
+    that string. An exception is the string '*', which will match all
+    messages.
 
     If it is a number, then it matches all messages tagged with the
     tag whose id is that number.
@@ -66,7 +67,9 @@ class Mailbox(Base):
         Given a query list or string, return those messages that match
         that query.
         """
-        if isinstance(query, basestring):
+        if query == '*':
+            return meta.Session.query(Message.id)
+        elif isinstance(query, basestring):
             return meta.Session.query(Message.id).join('tags').\
                 filter_by(name=query)
         elif isinstance(query, int):
@@ -163,7 +166,7 @@ class Mailbox(Base):
     def isWriteable(self):
         # A mailbox is only writeable if moving a message into it
         # causes that message to be tagged with something
-        return isinstance(self.query, (basestring, int))
+        return isinstance(self.query, (basestring, int)) and self.query != '*'
 
     def destroy(self):
         try:
