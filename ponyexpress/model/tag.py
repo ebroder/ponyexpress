@@ -41,16 +41,17 @@ class Tag(Base):
             last = meta.Session.query(sa.func.max(MessageTag.id)).\
                 filter(MessageTag.tag_id==self.id).scalar()
             if last is None:
-                return []
+                return
             else:
                 messages.last = last
-                return messages
+                for m in messages:
+                    yield m
         else:
             last = meta.Session.query(MessageTag).\
                 filter(MessageTag.tag_id==self.id).\
                 count()
             if last is 0:
-                return []
+                return
             else:
                 messages.last = last
                 # TODO: Make this not as retardedly inefficient
