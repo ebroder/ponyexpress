@@ -94,11 +94,13 @@ class Mailbox(Base):
                 del query[0:2]
             return messages
 
-    def __terminateSet(self, messages, uid):
+    def __parseSet(self, messages, uid):
         if uid:
             messages.last = self.messages[-1]
+            return messages
         else:
             messages.last = len(self.messages)
+            return [self.messages[m - 1] for m in messages]
 
     # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
 
@@ -191,21 +193,13 @@ class Mailbox(Base):
         raise NotImplementedError
 
     def fetch(self, messages, uid):
-        self.__terminateSet(messages, uid)
+        messages = self.__parseSet(messages, uid)
         for m in messages:
-            if uid:
-                # If we're looping over a range of UIDs, we should
-                # make sure each UID exists so we don't yield None
-                msg = meta.Session.query(Message).get(m)
-                if msg is not None:
-                    yield msg
-            else:
-                # The message sequence counter could potentially
-                # overflow the number of messages in the mailbox, but
-                # it's illegal for the client to request a sequence
-                # number that doesn't exist, so we want to pass up the
-                # KeyError
-                yield meta.Session.query(Message).get(self.messages[m - 1])
+            # If we're looping over a range of UIDs, we should
+            # make sure each UID exists so we don't yield None
+            msg = meta.Session.query(Message).get(m)
+            if msg is not None:
+                yield msg
 
     def store(self, messages, flags, mode, uid):
         raise NotImplementedError
