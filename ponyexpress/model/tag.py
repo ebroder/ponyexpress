@@ -77,3 +77,34 @@ class Tag(Base):
 
     def getHierarchialDelimiter(self):
         return '.'
+
+    # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
+
+    def getUIDValidity(self):
+        # We do have to be concerned with a tag being deleted and then
+        # recreated, but the UIDVALIDITY value can be constant for a
+        # given instance of a folder's lifetime.
+        #
+        # Hey - that sounds like the Tag primary key!
+        return self.id
+
+    def getUIDNext(self):
+        # It's kind of dumb, but there's no database-independent way
+        # to get the next value that's going to be used for a primary
+        # key.
+        #
+        # UIDNEXT isn't guaranteed to be accurate, just guaranteed to
+        # change iff new messages get inserted. This method should
+        # have that property.
+        #
+        # For normal folders, we use the MessageTag.id field as the
+        # UID
+        try:
+            # If there are no messages in this folder, this query will
+            # return None, which will throw a TypeError when I try to
+            # increment it
+            return meta.Session.query(sa.func.max(MessageTag.id)).\
+                filter(MessageTag.tag==self).\
+                scalar() + 1
+        except TypeError:
+            return 1
