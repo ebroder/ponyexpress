@@ -59,10 +59,7 @@ class Tag(Base):
                 # It'll currently generate one query per message
                 # sequence number.
                 for m in messages:
-                    yield meta.Session.query(MessageTag.id).\
-                        filter(MessageTag.tag_id==self.id).\
-                        offset(m - 1).\
-                        scalar()
+                    yield self.getUID(m)
 
     # The twisted.mail.imap4.IMailboxInfo interface (inherited by IMailbox)
 
@@ -108,3 +105,9 @@ class Tag(Base):
                 scalar() + 1
         except TypeError:
             return 1
+
+    def getUID(self, message):
+        return meta.Session.query(MessageTag.id).\
+            filter(MessageTag.tag_id==self.id).\
+            offset(message - 1).\
+            scalar()
