@@ -18,7 +18,7 @@ class Tag(Base):
     id = sa.Column(sa.types.Integer, primary_key=True)
     name = sa.Column(sa.types.Unicode(255), nullable=False, index=True,
                      unique=True)
-    tag_messages = relation(MessageTag, backref='tag')
+    tag_messages = relation(MessageTag, backref='tag', collection_class=set)
     messages = association_proxy('tag_messages', 'message',
                                  creator=(lambda x: MessageTag(message=x)))
 
