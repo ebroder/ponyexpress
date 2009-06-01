@@ -32,6 +32,7 @@ class Message(Base):
                        order_by=[Header.position])
     message_tags = relation(MessageTag,
                             backref='message',
-                            collection_class=set)
+                            collection_class=set,
+                            cascade='all, delete-orphan')
     tags = association_proxy('message_tags', 'tag',
                              creator=(lambda x: MessageTag(tag=x)))
