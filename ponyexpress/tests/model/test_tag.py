@@ -3,6 +3,7 @@ Tests for the PonyExpress Tag model
 """
 
 from ponyexpress.model import *
+from ponyexpress.tests.model import clearTables
 
 def test_getMessageCount():
     t1 = Tag(name=u'foo')
@@ -20,9 +21,7 @@ def test_getMessageCount():
     # cache
     assert meta.Session.query(Tag).filter_by(name=u'foo').one().getMessageCount() == 2
 
-    meta.Session.query(Tag).delete()
-    meta.Session.query(Message).delete()
-    meta.Session.commit()
+    clearTables()
 
 def test_getUnseenCount():
     seen = Tag(name=ur'\Seen')
@@ -39,6 +38,4 @@ def test_getUnseenCount():
     assert t1.getUnseenCount() == 1
     assert t2.getUnseenCount() == 2
 
-    meta.Session.query(Tag).delete()
-    meta.Session.query(Message).delete()
-    meta.Session.commit()
+    clearTables()
