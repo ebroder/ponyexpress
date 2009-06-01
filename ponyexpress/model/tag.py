@@ -4,6 +4,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 from ponyexpress.model.base import Base
 from ponyexpress.model.message_tag import MessageTag
+from ponyexpress.model.message import Message
 from ponyexpress.model import meta
 
 from zope.interface import implements

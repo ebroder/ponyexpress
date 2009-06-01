@@ -5,7 +5,6 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 from ponyexpress.model.base import Base
 from ponyexpress.model.header import Header
-from ponyexpress.model.tag import Tag
 from ponyexpress.model.message_tag import MessageTag
 
 from datetime import datetime
