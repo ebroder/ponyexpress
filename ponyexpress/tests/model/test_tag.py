@@ -4,18 +4,6 @@ Tests for the PonyExpress Tag model
 
 from ponyexpress.model import *
 
-def test_cascadingDelete():
-    t1 = Tag(name=u'foo')
-    m1 = Message(body=u'm1', length=0, tags=[t1])
-
-    meta.Session.add_all([t1, m1])
-    meta.Session.commit()
-
-    meta.Session.query(Tag).delete()
-    meta.Session.query(Message).delete()
-    meta.Session.commit()
-    assert meta.Session.query(MessageTag).count() == 0
-
 def test_getMessageCount():
     t1 = Tag(name=u'foo')
     t2 = Tag(name=u'bar')
