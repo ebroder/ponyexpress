@@ -111,3 +111,21 @@ class Tag(Base):
             filter(MessageTag.tag_id==self.id).\
             offset(message - 1).\
             scalar()
+
+    def getMessageCount(self):
+        return len(self.messages)
+
+    def getRecentCount(self):
+        # For the time being, PonyExpress never sets the \Recent flag
+        # on messages. Since clients are obligated to function without
+        # it ever being set, this seems more or less reasonable.
+        #
+        # Imagine that there was a client that always saw the newest
+        # message faster than you did
+        return 0
+
+    def getUnseenCount(self):
+        return meta.Session.query(Message).\
+            filter(Message.id.in_(self.messages)).\
+            filter(~Message.message_tags.any(MessageTag.tag.has(name='\\Seen'))).\
+            count()
