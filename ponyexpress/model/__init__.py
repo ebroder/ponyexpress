@@ -18,3 +18,5 @@ def init_model(engine):
 
     meta.engine = engine
     meta.Session = orm.scoped_session(sm)
+
+    orm.compile_mappers()
