@@ -127,6 +127,6 @@ class Tag(Base):
 
     def getUnseenCount(self):
         return meta.Session.query(Message).\
-            filter(Message.id.in_(self.messages)).\
-            filter(~Message.message_tags.any(MessageTag.tag.has(name='\\Seen'))).\
+            filter(Message.message_tags.any(MessageTag.tag==self)).\
+            filter(~Message.message_tags.any(MessageTag.tag.has(name=ur'\Seen'))).\
             count()
