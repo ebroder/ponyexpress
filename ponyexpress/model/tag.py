@@ -133,3 +133,18 @@ class Tag(Base):
             filter(Message.message_tags.any(MessageTag.tag==self)).\
             filter(~Message.message_tags.any(MessageTag.tag.has(name=ur'\Seen'))).\
             count()
+
+    def isWriteable(self):
+        # Normal mailboxes are always writeable.
+        return True
+
+    def destroy(self):
+        # The IAccount interface will handle actually deleting this
+        # Tag instance from the database, because, let's face it,
+        # deleting yourself is a bit weird.
+        #
+        # That makes this a NOOP
+        pass
+
+    def requestStatus(self, names):
+        return imap4.statusRequestHelper(self, names)
