@@ -16,6 +16,7 @@ def test_getMessageCount():
     meta.Session.commit()
 
     assert t1.getMessageCount() == 2
+    assert t2.getMessageCount() == 1
     meta.Session.expunge_all()
     # Make sure that getMessageCount works if the object isn't in the
     # cache
