@@ -23,3 +23,22 @@ def test_getMessageCount():
     meta.Session.query(Tag).delete()
     meta.Session.query(Message).delete()
     meta.Session.commit()
+
+def test_getUnseenCount():
+    seen = Tag(name=ur'\Seen')
+    t1 = Tag(name=u'foo')
+    t2 = Tag(name=u'bar')
+
+    m1 = Message(body=u"m1", length=0, tags=[seen, t1])
+    m2 = Message(body=u"m2", length=0, tags=[t2])
+    m3 = Message(body=u"m3", length=0, tags=[t1, t2])
+
+    meta.Session.add_all([seen, t1, t2, m1, m2, m3])
+    meta.Session.commit()
+
+    assert t1.getUnseenCount() == 1
+    assert t2.getUnseenCount() == 2
+
+    meta.Session.query(Tag).delete()
+    meta.Session.query(Message).delete()
+    meta.Session.commit()
