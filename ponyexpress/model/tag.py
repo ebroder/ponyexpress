@@ -175,4 +175,13 @@ class Tag(Base):
     # The twisted.mail.imap4.IMessageCopier interface
 
     def copy(self, msg):
-        raise NotImplementedError
+        # The object that gets passed into copy must be something that
+        # was returned from fetch, so it's got to be a
+        # ponyexpress.model.Message object, so we can just add another
+        # tag to that object
+        try:
+            msg.tags.add(self)
+            meta.Session.commit()
+        except:
+            meta.Session.rollback()
+            raise
