@@ -14,7 +14,7 @@ class Tag(Base):
     __tablename__ = 'tags'
     # For each tag, there is an associated mailbox - this class
     # implements that interface
-    implements(imap4.IMailbox)
+    implements(imap4.IMailbox, imap4.ISearchableMailbox, imap4.IMessageCopier)
 
     id = sa.Column(sa.types.Integer, primary_key=True)
     name = sa.Column(sa.types.Unicode(255), nullable=False, index=True,
@@ -148,3 +148,31 @@ class Tag(Base):
 
     def requestStatus(self, names):
         return imap4.statusRequestHelper(self, names)
+
+    def addListener(self, listener):
+        raise NotImplementedError
+
+    def removeListener(self, listener):
+        raise NotImplementedError
+
+    def addMessage(self, message, flags={}, date=None):
+        raise NotImplementedError
+
+    def expunge(self):
+        raise NotImplementedError
+
+    def fetch(self, messages, uid):
+        raise NotImplementedError
+
+    def store(self, messages, flags, mode, uid):
+        raise NotImplementedError
+
+    # The twisted.mail.imap4.ISearchableMailbox interface
+
+    def search(self, query, uid):
+        raise NotImplementedError
+
+    # The twisted.mail.imap4.IMessageCopier interface
+
+    def copy(self, msg):
+        raise NotImplementedError
