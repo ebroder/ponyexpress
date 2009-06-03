@@ -71,3 +71,19 @@ def test_getUnseenCount():
     assert t2.getUnseenCount() == 2
 
     clearTables()
+
+def test_copy():
+    t1 = Tag(name=u'foo')
+    t2 = Tag(name=u'bar')
+
+    m1 = Message(body=u"m1", length=0, tags=[t1])
+
+    meta.Session.add_all([t1, t2, m1])
+    meta.Session.commit()
+
+    t2.copy(m1)
+
+    assert t1 in m1.tags
+    assert t2 in m1.tags
+
+    clearTables()
