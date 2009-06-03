@@ -18,6 +18,24 @@ def test_getFlags():
 
     clearTables()
 
+def test_getUIDValidity():
+    # Test that the UIDVALIDITY changes when a folder is deleted
+    t1 = Tag(name=u'foo')
+    meta.Session.add(t1)
+    meta.Session.commit()
+
+    oldUIDValidity = t1.getUIDValidity()
+
+    meta.Session.delete(t1)
+    meta.Session.commit()
+
+    t2 = Tag(name=u'foo')
+    meta.Session.add(t2)
+
+    assert oldUIDValidity != t2.getUIDValidity()
+
+    clearTables()
+
 def test_getMessageCount():
     t1 = Tag(name=u'foo')
     t2 = Tag(name=u'bar')
