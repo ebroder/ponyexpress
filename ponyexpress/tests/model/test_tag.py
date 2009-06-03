@@ -5,6 +5,19 @@ Tests for the PonyExpress Tag model
 from ponyexpress.model import *
 from ponyexpress.tests.model import clearTables
 
+def test_getFlags():
+    t1 = Tag(name=u'foo')
+    t2 = Tag(name=u'bar')
+
+    meta.Session.add_all([t1, t2])
+    meta.Session.commit()
+
+    assert len(t1.getFlags()) == \
+        len(t2.getFlags()) == \
+        4
+
+    clearTables()
+
 def test_getMessageCount():
     t1 = Tag(name=u'foo')
     t2 = Tag(name=u'bar')
