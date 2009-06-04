@@ -31,8 +31,9 @@ def test_getUIDValidity():
 
     t2 = Tag(name=u'foo')
     meta.Session.add(t2)
+    meta.Session.commit()
 
-    assert oldUIDValidity != t2.getUIDValidity()
+    assert oldUIDValidity < t2.getUIDValidity()
 
     clearTables()
 
