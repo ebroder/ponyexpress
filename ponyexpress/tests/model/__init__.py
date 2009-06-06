@@ -15,12 +15,13 @@ def setup():
     model.init_model(e)
     model.Base.metadata.create_all(bind=e)
 
-def clearTables():
-    for t in dir(model):
-        try:
-            if t != 'Base' and issubclass(getattr(model, t), model.Base):
-                for x in model.meta.Session.query(getattr(model, t)):
-                    model.meta.Session.delete(x)
-        except TypeError:
-            pass
-    model.meta.Session.commit()
+class ModelTest(object):
+    def tearDown(self):
+        for t in dir(model):
+            try:
+                if t != 'Base' and issubclass(getattr(model, t), model.Base):
+                    for x in model.meta.Session.query(getattr(model, t)):
+                        model.meta.Session.delete(x)
+            except TypeError:
+                pass
+        model.meta.Session.commit()
