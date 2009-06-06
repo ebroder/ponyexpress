@@ -117,3 +117,36 @@ class TestTag(ModelTest):
 
         n.ok_(t1 in m1.tags)
         n.ok_(t2 in m1.tags)
+
+    # Tests that I feel idiotic for writing, but will do so anyway so
+    # I can boast about coverage
+
+    def test_getHierarchialDelimiter(self):
+        t1 = Tag(name=u'foo')
+        meta.Session.add(t1)
+        meta.Session.commit()
+
+        n.eq_(t1.getHierarchialDelimiter(), '.')
+
+    def test_getRecentCount(self):
+        t1 = Tag(name=u'foo')
+        meta.Session.add(t1)
+        meta.Session.commit()
+
+        n.eq_(t1.getRecentCount(), 0)
+
+    def test_isWriteable(self):
+        t1 = Tag(name=u'foo')
+        meta.Session.add(t1)
+        meta.Session.commit()
+
+        n.eq_(t1.isWriteable(), True)
+
+    def test_destroy(self):
+        # There's not actually anything at all to test here, except
+        # that the function runs
+        t1 = Tag(name=u'foo')
+        meta.Session.add(t1)
+        meta.Session.commit()
+
+        t1.destroy()
