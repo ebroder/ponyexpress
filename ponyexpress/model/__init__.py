@@ -1,5 +1,7 @@
 """The PonyExpress database model"""
 
+from ponyexpress.model import monkeypatch
+
 from sqlalchemy import orm
 
 from ponyexpress.model.base import Base
