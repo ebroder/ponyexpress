@@ -11,22 +11,32 @@ of how IMAP expects the UID and UIDVALIDITY and other fields to
 change, that's not acceptable for PonyExpress.
 """
 
+import sqlalchemy
 from sqlalchemy.databases import sqlite
 import sqlalchemy.types as sqltypes
 
-# Unfortunately, the class that I'm subclassing changed names between
-# 0.5 and 0.6, but didn't change functions.
-DefaultDDLCompiler = getattr(sqlite, 'SQLiteDDLCompiler', None)
-if not DefaultDDLCompiler:
-    DefaultDDLCompiler = getattr(sqlite, 'SQLiteSchemaGenerator')
+# Unfortunately, everything changed names between SA 0.5 and 0.6,
+# although very little changed functionality. This is why people
+# shouldn't actually monkeypatch
+from pkg_resources import parse_version
+sa05 = (parse_version(sqlalchemy.__version__) < parse_version('0.6a'))
+
+if sa05:
+    DefaultDDLCompiler = sqlite.SQLiteSchemaGenerator
+else:
+    DefaultDDLCompiler = sqlite.SQLiteDDLCompiler
 
 # I'm monkey patching the sqlite dialect to always set AUTOINCREMENT
 # on single-column primary key fields, because I need the semantics of
 # a ROWID never being reused
 class PonySQLiteDDLCompile(DefaultDDLCompiler):
     def get_column_specification(self, column, **kwargs):
-        colspec = [self.preparer.format_column(column),
-                   column.type.dialect_impl(self.dialect).get_col_spec()]
+        colspec = [self.preparer.format_column(column)]
+
+        if sa05:
+            colspec.append(column.type.dialect_impl(self.dialect).get_col_spec())
+        else:
+            colspec.append(self.dialect.type_compiler.process(column.type))
 
         default = self.get_column_default_string(column)
         if default is not None:
@@ -52,5 +62,7 @@ class PonySQLiteDDLCompile(DefaultDDLCompiler):
                 return ''
         return super(PonySQLiteDDLCompile, self).visit_primary_key_constraint(constraint)
 
-sqlite.dialect.ddl_compiler = PonySQLiteDDLCompile
-sqlite.dialect.schemagenerator = PonySQLiteDDLCompile
+if sa05:
+    sqlite.dialect.schemagenerator = PonySQLiteDDLCompile
+else:
+    sqlite.dialect.ddl_compiler = PonySQLiteDDLCompile
