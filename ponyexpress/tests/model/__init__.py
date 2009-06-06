@@ -17,6 +17,7 @@ def setup():
 
 class ModelTest(object):
     def tearDown(self):
+        model.meta.Session.expunge_all()
         for t in dir(model):
             try:
                 if t != 'Base' and issubclass(getattr(model, t), model.Base):
