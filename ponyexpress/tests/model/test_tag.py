@@ -38,10 +38,15 @@ class TestTag(ModelTest):
         t1 = Tag(name=u'foo')
         t2 = Tag(name=u'bar')
 
+        meta.Session.add_all([t1, t2])
+        meta.Session.commit()
+
+        n.eq_(t1.getUIDNext(), 1)
+
         m1 = Message(body=u'm1', length=0, tags=[t1, t2])
         m2 = Message(body=u'm2', length=0, tags=[t2])
 
-        meta.Session.add_all([t1, t2, m1, m2])
+        meta.Session.add_all([m1, m2])
         meta.Session.commit()
 
         oldUIDNext = t1.getUIDNext()
