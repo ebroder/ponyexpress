@@ -34,6 +34,38 @@ class TestTag(ModelTest):
 
         assert oldUIDValidity < t2.getUIDValidity()
 
+    def test_getUIDNext(self):
+        t1 = Tag(name=u'foo')
+        t2 = Tag(name=u'bar')
+
+        m1 = Message(body=u'm1', length=0, tags=[t1, t2])
+        m2 = Message(body=u'm2', length=0, tags=[t2])
+
+        meta.Session.add_all([t1, t2, m1, m2])
+        meta.Session.commit()
+
+        oldUIDNext = t1.getUIDNext()
+
+        m2.tags.add(t1)
+        meta.Session.commit()
+
+        assert oldUIDNext < t1.getUIDNext()
+        oldUIDNext = t1.getUIDNext()
+
+        # UIDNEXT shouldn't increase when a message is added to a
+        # different folder
+        m3 = Message(body=u'm3', length=0, tags=[t2])
+        meta.Session.add(m3)
+        meta.Session.commit()
+
+        assert oldUIDNext == t1.getUIDNext()
+
+        m4 = Message(body=u'm4', length=0, tags=[t1])
+        meta.Session.add(m4)
+        meta.Session.commit()
+
+        assert oldUIDNext < t1.getUIDNext()
+
     def test_getMessageCount(self):
         t1 = Tag(name=u'foo')
         t2 = Tag(name=u'bar')
