@@ -30,7 +30,9 @@ class PonySQLiteDDLCompile(sqlite.SQLiteSchemaGenerator):
         if not column.nullable:
             colspec.append('NOT NULL')
 
-        if column.primary_key and column.autoincrement and \
+        if column.primary_key and \
+                'sqlite_autoincrement' in column.table.kwargs and \
+                column.table.kwargs['sqlite_autoincrement'] and \
                 len(column.table.primary_key.columns) == 1 and \
                 isinstance(column.type, sqltypes.Integer) and \
                 not column.foreign_keys:
@@ -41,7 +43,9 @@ class PonySQLiteDDLCompile(sqlite.SQLiteSchemaGenerator):
     def visit_primary_key_constraint(self, constraint):
         if len(constraint.columns) == 1:
             c = list(constraint).pop(0)
-            if c.primary_key and c.autoincrement and \
+            if c.primary_key and \
+                    'sqlite_autoincrement' in c.table.kwargs and \
+                    c.table.kwargs['sqlite_autoincrement'] and \
                     isinstance(c.type, sqltypes.Integer) and \
                     not c.foreign_keys:
                 return ''
