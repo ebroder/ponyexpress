@@ -4,6 +4,7 @@ from ponyexpress.model.base import Base
 
 class Header(Base):
     __tablename__ = 'headers'
+    __table_args__ = {'sqlite_autoincrement': True}
 
     id = sa.Column(sa.types.Integer, primary_key=True)
     position = sa.Column(sa.types.Integer)

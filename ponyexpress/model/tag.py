@@ -12,6 +12,7 @@ from twisted.mail import imap4
 
 class Tag(Base):
     __tablename__ = 'tags'
+    __table_args__ = {'sqlite_autoincrement': True}
     # For each tag, there is an associated mailbox - this class
     # implements that interface
     implements(imap4.IMailbox, imap4.ISearchableMailbox, imap4.IMessageCopier)

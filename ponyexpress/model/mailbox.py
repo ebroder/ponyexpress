@@ -11,6 +11,7 @@ from twisted.mail import imap4
 
 class Mailbox(Base):
     __tablename__ = 'mailboxes'
+    __table_args__ = {'sqlite_autoincrement': True}
     implements(imap4.IMailbox, imap4.ISearchableMailbox, imap4.IMessageCopier)
 
     id = sa.Column(sa.types.Integer, primary_key=True)

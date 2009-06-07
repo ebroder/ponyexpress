@@ -11,6 +11,7 @@ from datetime import datetime
 
 class Message(Base):
     __tablename__ = 'messages'
+    __table_args__ = {'sqlite_autoincrement': True}
 
     # Used as the UID of the message
     id = sa.Column(sa.types.Integer, primary_key=True)
