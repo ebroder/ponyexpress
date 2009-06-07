@@ -166,7 +166,84 @@ class Tag(Base):
         raise NotImplementedError
 
     def store(self, messages, flags, mode, uid):
-        raise NotImplementedError
+        # TODO: Figure out what the hell the semantics are if you try
+        # to change the flag corresponding to this folder
+        #
+        # Also how we notify all of the appropriate listeners that
+        # we're mucking with the flags
+
+        messages = self.__parseSet(messages, uid)
+
+        # \Deleted is the special case flag - it's not treated as a
+        # normal tag, but instead it's stored on the messages_tags
+        # secondary table
+        try:
+            flags.remove('\Deleted')
+            deleted = True
+        except ValueError:
+            deleted = False
+
+        # If any of this database manipulation fails, roll back the
+        # transaction
+        try:
+            # Get tag IDs, because we'll generally want to use those
+            #
+            # SQLAlchemy doesn't seem to be able to give me just a
+            # list of ints instead of a list of tuples, so let's just
+            # go ahead and get the first (and only) element of each
+            # tuple
+            tags = [r[0] for r in \
+                        meta.Session.query(Tag.id).filter(Tag.name.in_(flags))]
+
+            if mode == -1:
+                meta.Session.query(MessageTag).\
+                    filter(MessageTag.message_id.in_(messages)).\
+                    filter(MessageTag.tag_id.in_(tags)).\
+                    delete()
+                # If we're unsetting flags and \Deleted is one of the
+                # ones to unset
+                if deleted:
+                    meta.Session.query(MessageTag).\
+                        filter(MessageTag.message_id.in_(messages)).\
+                        filter(MessageTag.tag==self).\
+                        update({'deleted': False})
+            else:
+                if mode == 0:
+                    # Clear all of the flags that we're not about to
+                    # set
+                    meta.Session.query(MessageTag).\
+                        filter(MessageTag.message_id.in_(messages)).\
+                        filter(~MessageTag.tag_id.in_(tags)).\
+                        delete()
+                    # If we're not setting \Deleted, then we need to
+                    # unset it
+                    if not deleted:
+                        meta.Session.query(MessageTag).\
+                            filter(MessageTag.message_id.in_(messages)).\
+                            filter(MessageTag.tag==self).\
+                            update({'deleted': False})
+
+                # At this point, we know that we're not removing
+                # flags, so for both mode 0 and 1, we need to set all
+                # of the flags that were passed in
+                #
+                # Unfortunately, there's not a particularly efficient
+                # way to generate this
+                for tag in tags:
+                    for message in messages:
+                        meta.Session.add(MessageTag(message_id=message,
+                                                    tag_id=tag))
+                if deleted:
+                    meta.Session.query(MessageTag).\
+                        filter(MessageTag.message_id.in_(messages)).\
+                        filter(MessageTag.tag==self).\
+                        update({'deleted': True})
+
+            # And now commit everything that we did
+            meta.Session.commit()
+        except:
+            meta.Session.rollback()
+            raise
 
     # The twisted.mail.imap4.ISearchableMailbox interface
 
