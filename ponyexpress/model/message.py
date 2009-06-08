@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import relation
+from sqlalchemy.orm import relation, deferred
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.ext.associationproxy import association_proxy
 
@@ -16,7 +16,7 @@ class Message(Base):
     # Used as the UID of the message
     id = sa.Column(sa.types.Integer, primary_key=True)
     # Just the message body; does not include headers
-    body = sa.Column(sa.types.Text, index=True)
+    body = deferred(sa.Column(sa.types.Text, index=True))
     # This is the total size of the message, including headers, in
     # bytes when rendered in RFC 2822 form
     length = sa.Column(sa.types.Integer, nullable=False)
