@@ -166,7 +166,7 @@ class Tag(Base):
     def fetch(self, messages, uid):
         messages = self.__parseSet(messages, uid)
         for m in messages:
-            yield meta.Session.query(Message).get(m)
+            yield meta.Session.query(MessageTag).get(m).message
 
     @in_transaction
     def store(self, messages, flags, mode, uid):

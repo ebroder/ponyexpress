@@ -118,8 +118,8 @@ class TestTag(ModelTest):
         n.eq_(list(t1.fetch(m, False)), [m1, m2])
 
         m = MessageSet()
-        m.add(m1.message_tags[0].id)
-        m.add(m2.message_tags[0].id)
+        m.add(t1.getUID(1))
+        m.add(t1.getUID(2))
         n.eq_(list(t1.fetch(m, True)), [m1, m2])
 
     def test_copy(self):
