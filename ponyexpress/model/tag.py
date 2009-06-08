@@ -164,7 +164,9 @@ class Tag(Base):
         raise NotImplementedError
 
     def fetch(self, messages, uid):
-        raise NotImplementedError
+        messages = self.__parseSet(messages, uid)
+        for m in messages:
+            yield meta.Session.query(Message).get(m)
 
     @in_transaction
     def store(self, messages, flags, mode, uid):
