@@ -4,6 +4,7 @@ Tests for the PonyExpress Tag model
 
 from ponyexpress.model import *
 from ponyexpress.tests.model import ModelTest
+from twisted.mail.imap4 import MessageSet
 from nose import tools as n
 
 class TestTag(ModelTest):
@@ -103,6 +104,23 @@ class TestTag(ModelTest):
 
         n.eq_(t1.getUnseenCount(), 1)
         n.eq_(t2.getUnseenCount(), 2)
+
+    def test_fetch(self):
+        t1 = Tag(name=u'foo')
+
+        m1 = Message(body=u'm1', length=0, tags=[t1])
+        m2 = Message(body=u'm2', length=0, tags=[t1])
+
+        meta.Session.add_all([t1, m1, m2])
+        meta.Session.commit()
+
+        m = MessageSet(1, 2)
+        n.eq_(list(t1.fetch(m, False)), [m1, m2])
+
+        m = MessageSet()
+        m.add(m1.message_tags[0].id)
+        m.add(m2.message_tags[0].id)
+        n.eq_(list(t1.fetch(m, True)), [m1, m2])
 
     def test_copy(self):
         t1 = Tag(name=u'foo')
